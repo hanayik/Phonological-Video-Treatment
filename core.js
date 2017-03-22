@@ -24,7 +24,7 @@ var sys = {
 }
 var exp = new experiment('Phonological-Video-Treatment')
 var trialTimeoutID
-var trialTimeoutTime = 1000*10 // 10 seconds
+var trialTimeoutTime = 1000*5 // 10 seconds
 exp.getRootPath()
 exp.getMediaPath()
 var mediaPath = path.resolve(exp.mediapath, 'video')
@@ -38,6 +38,7 @@ var level7Trials = readCSV(path.resolve(exp.mediapath, 'level7.csv'))
 var level8Trials = readCSV(path.resolve(exp.mediapath, 'level8.csv'))
 var level9Trials = readCSV(path.resolve(exp.mediapath, 'level9.csv'))
 var level10Trials = readCSV(path.resolve(exp.mediapath, 'level10.csv'))
+var trials
 var maxTrials = 20
 var fileToSave
 var fileHeader = ['subj', 'session', 'assessment', 'stim1', 'stim2', 'correctResp', 'keyPressed', 'reactionTime', 'accuracy', os.EOL]
@@ -46,6 +47,7 @@ var subjID
 var sessID
 var stimOnset
 var accuracy
+var totalAccArray = []
 var rt
 //var trialNum = document.getElementById("trialNumID")
 //var trialNumber = 1
@@ -62,6 +64,8 @@ var level8Instructions = "level 8"
 var level9Instructions = "level 9"
 var level10Instructions = "level 10"
 var randomArray = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19]
+var accCutOff = 0.8
+var trialOrder = []
 
 
 
@@ -209,6 +213,7 @@ function clearScreen() {
 
 // show text instructions on screen
 function showInstructions(txt) {
+  trialOrder = shuffle(randomArray)
   fileToSave = path.join(userDataPath,subjID+'_'+sessID+'_level_'+level+'_'+getDateStamp()+'.csv')
   clearScreen()
   var textDiv = document.createElement("div")
@@ -388,7 +393,7 @@ function getRT() {
 
 
 function checkAccuracy() {
- if (keys.key === wordsFilledTrials[t].correctResp.trim()) {
+ if (keys.key === trials[trialOrder[t]].correctResp.trim()) {
    acc = 1
  } else {
    acc = 0
@@ -422,19 +427,27 @@ function updateKeys() {
   console.log("key: " + keys.key)
   if (keys.key === '1' || keys.key === '2') {
     clearScreen()
-    if (level === 'level1') {
-      //accuracy = checkAccuracy()
-      //console.log("accuracy: ", accuracy)
-      keys.rt = getRT()
-      console.log("RT: ", keys.rt)
-      //['subj', 'session', 'assessment', 'stim1', 'stim2', 'correctResp', 'keyPressed', 'reactionTime', 'accuracy', os.EOL]
-      //appendTrialDataToFile(wordsFilledFileToSave, [subjID, sessID, assessment, wordsFilledTrials[t].stim1.trim(), wordsFilledTrials[t].stim2.trim(), wordsFilledTrials[t].correctResp.trim(), keys.key, keys.rt, accuracy])
-      //waitSecs(1.5)
-      setTimeout(function() {showNextTrial(level)}, iti)
-    }
+    accuracy = checkAccuracy()
+    totalAccArray.push(accuracy)
+    totalAcc = mean(totalAccArray)
+    console.log('total acc: ', totalAcc)
+    console.log("accuracy: ", accuracy)
+    keys.rt = getRT()
+    console.log("RT: ", keys.rt)
+    //['subj', 'session', 'assessment', 'stim1', 'stim2', 'correctResp', 'keyPressed', 'reactionTime', 'accuracy', os.EOL]
+    //appendTrialDataToFile(wordsFilledFileToSave, [subjID, sessID, assessment, wordsFilledTrials[t].stim1.trim(), wordsFilledTrials[t].stim2.trim(), wordsFilledTrials[t].correctResp.trim(), keys.key, keys.rt, accuracy])
+    //waitSecs(1.5)
+    setTimeout(function() {showNextTrial(level)}, iti)
   } else if (keys.key === 'ArrowLeft') {
 
   }
+}
+
+
+function mean(arrayToAvg) {
+  var sum = arrayToAvg.reduce((previous, current) => current += previous);
+  var avg = sum / arrayToAvg.length;
+  return avg
 }
 
 
@@ -496,10 +509,23 @@ function checkForEscape() {
     nav.hidden = false
     // unloadJS(exp.name)
     clearScreen()
+    resetVars()
   }
 }
 
+
+function resetVars() {
+  t = -1
+  accuracy = null
+  totalAccArray = []
+  rt = null
+  trialOrder = []
+  trials = null
+  level = null
+}
+
 function getStarted() {
+  resetVars()
   subjID = document.getElementById("subjID").value
   sessID = document.getElementById("sessID").value
   level = document.getElementById("levelID").value
@@ -567,30 +593,54 @@ function showNextTrial(level) {
   if (t > maxTrials-1) {
     clearScreen()
     clearAllTimeouts()
+    showSummary()
     openNav()
     t = maxTrials+1
     return false
   }
   var vid = document.createElement("video")
-  vid.src = path.join(mediaPath, trials[t].stim1.trim() + '.mp4')
+  vid.src = path.join(mediaPath, trials[trialOrder[t]].stim1.trim() + '.mp4')
   vid.autoplay = true
   vid.controls = false
   content.appendChild(vid)
   vid.onended = function() {
     clearScreen()
     var vid2 = document.createElement("video")
-    vid2.src = path.join(mediaPath, trials[t].stim2.trim() + '.mp4')
+    vid2.src = path.join(mediaPath, trials[trialOrder[t]].stim2.trim() + '.mp4')
     vid2.autoplay = true
     vid2.controls = false
     vid2.onended = function() {
       clearScreen()
+      trialTimeoutID = setTimeout(function() {
+        showNextTrial(level)
+      }, trialTimeoutTime)
     }
     content.appendChild(vid2)
   }
-  trialTimeoutID = setTimeout(function() {
-    showNextTrial(level)
-  }, trialTimeoutTime)
   return getTime()
+}
+
+
+function showSummary() {
+  accMin = 0.6
+  if (totalAcc < accCutOff && totalAcc >= accMin) {
+    accMsg = 'Accuracy: ' + totalAcc + '. Recommendation: Repeat current level (' + level + ')'
+  } else if (totalAcc < accMin) {
+    accMsg = 'Accuracy: ' + totalAcc + '. Recommendation: Move down one level'
+  } else if (totalAcc >= accCutOff) {
+    if (level === 'level10') {
+      accMsg = 'Accuracy: ' + totalAcc + '. Recommendation: Already at the highest level. Try for a higher accuracy.'
+    } else {
+      accMsg = 'Accuracy: ' + totalAcc + '. Recommendation: Move up one level'
+    }
+  }
+  var textDiv = document.createElement("div")
+  textDiv.style.textAlign = 'center'
+  var p = document.createElement("p")
+  var txtNode = document.createTextNode(accMsg)
+  p.appendChild(txtNode)
+  textDiv.appendChild(p)
+  content.appendChild(textDiv)
 }
 
 
