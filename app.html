@@ -9,7 +9,6 @@
         <span id="closeNavBtn" class="closebtn" onclick="toggleNav()"></span>
       </div>
       <div class="menuList">
-        <!-- <span id="pnt" onclick="loadJS(this.id)">PNT</span> -->
         <form action="hideNav()">
           <label for="subjID">Participant</label>
           <input type="text" id="subjID" name="subjid" placeholder="0">
@@ -17,15 +16,19 @@
           <label for="sessID">Session</label>
           <input type="text" id="sessID" name="sessid" placeholder="0">
 
-          <label for="assessmentID">Assessment</label>
-          <select id="assessmentID" name="assessmentType">
-            <option value=""></option>
-            <option value="wordsFilled">Words Filled</option>
-            <option value="wordsUnfilled">Words Unfilled</option>
-            <option value="nonWordsFilled">Nonwords Filled</option>
-            <option value="nonWordsUnfilled">Nonwords Unfilled</option>
-            <option value="tripletsA1">Triplets A1</option>
-            <option value="tripletsA2">Triplets A2</option>
+          <label for="levelID">Assessment</label>
+          <select id="levelID" name="assessmentType">
+            <option value="">Choose Level</option>
+            <option value="level1">Level 1</option>
+            <option value="level2">Level 2</option>
+            <option value="level3">Level 3</option>
+            <option value="level4">Level 4</option>
+            <option value="level5">Level 5</option>
+            <option value="level6">Level 6</option>
+            <option value="level7">Level 7</option>
+            <option value="level8">Level 8</option>
+            <option value="level9">Level 9</option>
+            <option value="level10">Level 10</option>
           </select>
 
           <button type="button" onclick="getStarted()">Start</button>
@@ -36,7 +39,6 @@
       <!-- MAIN CONTENT AREA -->
     </div>
   </div>
-  <script type="text/javascript" src="./js/lowLag.js"></script>
   <script type="text/javascript" src="./core.js"></script>
   <script type="text/javascript" src="./menu.js"></script>
 </body>

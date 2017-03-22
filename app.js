@@ -12,7 +12,7 @@ const ffmpeg = appRootDir+'/ffmpeg/ffmpeg'
 const exec = require( 'child_process' ).exec
 const system = require('system-control')();
 const notifier = require('electron-notifications')
-app.setName("Memory")
+app.setName("Phonological-Video-Treatment")
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -52,7 +52,7 @@ function createWindow () {
         // });
         // USE NOTIFICATIONS WHEN MY PR IS MERGED!
         //
-        const notification = notifier.notify(app.getName(), {
+        const notification = notifier.notify('', {
           message: "Your screen is dim.",
           buttons: ['Illuminate', 'Cancel'],
           duration: 20000,
@@ -86,7 +86,7 @@ function createWindow () {
         //     system.audio.setSystemVolume(newVolumeLevel).then(function() {});
         //   }
         // });
-        const notification = notifier.notify(app.getName(), {
+        const notification = notifier.notify('', {
           message: "Your volume is a little low.",
           buttons: ['Make louder!', 'Cancel'],
           duration: 20000,

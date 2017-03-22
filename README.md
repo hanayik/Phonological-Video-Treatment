@@ -1,1 +1,1 @@
-icon credit http://www.flaticon.com/authors/freepik
+icon credit http://www.flaticon.com/authors/vectors-market
