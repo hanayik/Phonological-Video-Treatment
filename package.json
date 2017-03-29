@@ -1,13 +1,15 @@
 {
   "name": "phonologicalVideoTreatment",
   "productName": "Phonological Video Treatment",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "electron app.js",
-    "build-mac": "electron-packager . --out=dist --icon ./icon.icns --platform=darwin --overwrite --tmpdir=false"
+    "build-mac": "electron-packager . --out=dist --icon ./icon.icns --platform=darwin --overwrite --tmpdir=false",
+    "osx-sign": "codesign --deep --force --verbose --sign 'PLJK232T8G' './dist/Phonological Video Treatment-darwin-x64/Phonological Video Treatment.app'",
+    "startAppWithLogging": "'./dist/Phonological Video Treatment-darwin-x64/Phonological Video Treatment.app/Contents/MacOS/Phonological Video Treatment'"
   },
   "repository": {
     "type": "git",

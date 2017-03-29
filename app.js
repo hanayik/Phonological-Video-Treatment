@@ -1,4 +1,5 @@
 const electron = require('electron')
+const autoUpdater = electron.autoUpdater
 const Menu = electron.Menu
 const app = electron.app
 const BrowserWindow = electron.BrowserWindow
@@ -12,6 +13,9 @@ const ffmpeg = appRootDir+'/ffmpeg/ffmpeg'
 const exec = require( 'child_process' ).exec
 const system = require('system-control')();
 const notifier = require('electron-notifications')
+const os = require("os");
+var platform = os.platform() + '_' + os.arch();
+var version = app.getVersion();
 app.setName("Phonological-Video-Treatment")
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -31,6 +35,9 @@ function createWindow () {
 
   // Open the DevTools.
   //mainWindow.webContents.openDevTools()
+  console.log('https://phonological-video-treatment.herokuapp.com/'+'update/'+platform+'/'+version)
+  autoUpdater.setFeedURL('https://phonological-video-treatment.herokuapp.com/'+'update/'+platform+'/'+version);
+  autoUpdater.checkForUpdates()
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {
@@ -132,6 +139,38 @@ app.on('activate', function () {
   if (mainWindow === null) {
     createWindow()
   }
+})
+
+autoUpdater.on('error', function(err) {
+  console.log(err)
+})
+autoUpdater.on('checking-for-update', function(){
+  console.log('checking for update')
+})
+autoUpdater.on('update-available', function(){
+  console.log('update available, downloading now')
+})
+autoUpdater.on('update-not-available', function(){
+  console.log('update not available')
+})
+autoUpdater.on('update-downloaded', function(){
+  console.log('update downloaded')
+  const updateNotification = notifier.notify('', {
+    message: "Update downloaded!",
+    buttons: ['Install', 'Cancel'],
+    duration: 20000,
+    icon: path.join(__dirname, 'icon.png')
+  })
+  updateNotification.on('buttonClicked', (text) => {
+    console.log(text)
+    if (text === 'Install') {
+      autoUpdater.quitAndInstall()
+    }
+    updateNotification.close()
+  })
+  updateNotification.on('clicked', () => {
+    updateNotification.close()
+  })
 })
 
 // In this file you can include the rest of your app's specific main process
