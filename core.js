@@ -51,16 +51,36 @@ var rt
 //var trialNumber = 1
 var t = -1
 var tReal = t-1
-var level1Instructions = "level 1"
-var level2Instructions = "level 2"
-var level3Instructions = "level 3"
-var level4Instructions = "level 4"
-var level5Instructions = "level 5"
-var level6Instructions = "level 6"
-var level7Instructions = "level 7"
-var level8Instructions = "level 8"
-var level9Instructions = "level 9"
-var level10Instructions = "level 10"
+var level1Instructions = ["In this task you will see two videos at a time. " +
+        "Each video is of a person's mouth saying a single word. " +
+        "Listen closely to both words. " +
+        "Press GREEN if they have the same number of syllables. " +
+        "Press RED if they do not. "]
+var level2Instructions = ["In this task you will see two videos at a time. " +
+        "Each video is of a person's mouth saying a single word. " +
+        "Listen closely to both words. " +
+        "Press GREEN if the FIRST word has more syllables. " +
+        "Press RED if the SECOND word has more syllables. "]
+var level3Instructions = ["In this task you will see two videos at a time. " +
+        "Each video is of a person's mouth saying a single word. " +
+        "Listen closely to both words. " +
+        "Press GREEN if they START with the same sound. " +
+        "Press RED if they do not. "]
+var level4Instructions = level3Instructions
+var level5Instructions = level3Instructions
+var level6Instructions = ["In this task you will see two videos at a time. " +
+        "Each video is of a person's mouth saying a single word. " +
+        "Listen closely to both words. " +
+        "Press GREEN if they END with the same sound. " +
+        "Press RED if they do not. "]
+var level7Instructions = level6Instructions
+var level8Instructions = level6Instructions
+var level9Instructions = ["In this task you will see two videos at a time. " +
+        "Each video is of a person's mouth saying a single word. " +
+        "Listen closely to both words. " +
+        "Press GREEN if they rhyme. " +
+        "Press RED if they do not. "]
+var level10Instructions = level9Instructions
 var randomArray = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19]
 var accCutOff = 0.8
 var trialOrder = []
