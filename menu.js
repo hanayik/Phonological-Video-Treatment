@@ -64,6 +64,17 @@ const template = [
     ]
   },
   {
+    label: 'Options',
+    submenu: [
+      {
+        label: 'Save to Cloud',
+        type: 'checkbox',
+        checked: true,
+        click() {toggleCloudSetting()}
+      }
+    ]
+  },
+  {
     role: 'window',
     submenu: [
       {
@@ -137,7 +148,7 @@ if (process.platform === 'darwin') {
     }
   )
   // Window menu.
-  template[4].submenu = [
+  template[5].submenu = [
     {
       label: 'Close',
       accelerator: 'CmdOrCtrl+W',
