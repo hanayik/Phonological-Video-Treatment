@@ -38,6 +38,7 @@ var level9Trials = readCSV(path.resolve(exp.mediapath, 'level9.csv'))
 var level10Trials = readCSV(path.resolve(exp.mediapath, 'level10.csv'))
 var trials
 var maxTrials = 20
+var maxPracticeTrials = 2
 var fileToSave
 var fileHeader = ['subj', 'session', 'assessment', 'stim1', 'stim2', 'correctResp', 'keyPressed', 'reactionTime', 'accuracy', os.EOL]
 var level = ''
@@ -87,6 +88,7 @@ var trialOrder = []
 var userDataPath = path.join(app.getPath('userData'),'Data')
 makeSureUserDataFolderIsThere()
 var savePath
+isPractice = false
 
 
 
@@ -262,17 +264,27 @@ function showInstructions(txt) {
   p.appendChild(txtNode)
   textDiv.appendChild(p)
   var lineBreak = document.createElement("br")
-  var btnDiv = document.createElement("div")
+  var startBtnDiv = document.createElement("div")
   var startBtn = document.createElement("button")
   var startBtnTxt = document.createTextNode("Start")
   startBtn.appendChild(startBtnTxt)
   startBtn.onclick = function() {
     showNextTrial(level)
   }
-  btnDiv.appendChild(startBtn)
+  startBtnDiv.appendChild(startBtn)
+  var practiceBtnDiv = document.createElement("div")
+  var practiceBtn = document.createElement("button")
+  var practiceBtnTxt = document.createTextNode("Practice")
+  practiceBtn.appendChild(practiceBtnTxt)
+  practiceBtn.onclick = function() {
+    showNextPracticeTrial(level)
+  }
+  practiceBtnDiv.appendChild(practiceBtn)
   content.appendChild(textDiv)
   content.appendChild(lineBreak)
-  content.appendChild(btnDiv)
+  content.appendChild(startBtnDiv)
+  content.appendChild(lineBreak)
+  content.appendChild(practiceBtnDiv)
   return getTime()
 }
 
@@ -465,18 +477,30 @@ function updateKeys() {
   keys.rt = 0
   console.log("key: " + keys.key)
   if (keys.key === '1' || keys.key === '2') {
-    clearScreen()
-    accuracy = checkAccuracy()
-    totalAccArray.push(accuracy)
-    totalAcc = mean(totalAccArray)
-    console.log('total acc: ', totalAcc)
-    console.log("accuracy: ", accuracy)
-    keys.rt = getRT()
-    console.log("RT: ", keys.rt)
-    //['subj', 'session', 'assessment', 'stim1', 'stim2', 'correctResp', 'keyPressed', 'reactionTime', 'accuracy', os.EOL]
-    //appendTrialDataToFile(wordsFilledFileToSave, [subjID, sessID, assessment, wordsFilledTrials[t].stim1.trim(), wordsFilledTrials[t].stim2.trim(), wordsFilledTrials[t].correctResp.trim(), keys.key, keys.rt, accuracy])
-    //waitSecs(1.5)
-    setTimeout(function() {showNextTrial(level)}, iti)
+    if (!isPractice) {
+      clearScreen()
+      accuracy = checkAccuracy()
+      totalAccArray.push(accuracy)
+      totalAcc = mean(totalAccArray)
+      console.log('total acc: ', totalAcc)
+      console.log("accuracy: ", accuracy)
+      keys.rt = getRT()
+      console.log("RT: ", keys.rt)
+      //['subj', 'session', 'assessment', 'stim1', 'stim2', 'correctResp', 'keyPressed', 'reactionTime', 'accuracy', os.EOL]
+      //appendTrialDataToFile(wordsFilledFileToSave, [subjID, sessID, assessment, wordsFilledTrials[t].stim1.trim(), wordsFilledTrials[t].stim2.trim(), wordsFilledTrials[t].correctResp.trim(), keys.key, keys.rt, accuracy])
+      //waitSecs(1.5)
+      setTimeout(function() {showNextTrial(level)}, iti)
+    } else if (isPractice) {
+      clearScreen()
+      accuracy = checkAccuracy()
+      totalAccArray.push(accuracy)
+      totalAcc = mean(totalAccArray)
+      console.log('total acc: ', totalAcc)
+      console.log("accuracy: ", accuracy)
+      keys.rt = getRT()
+      console.log("RT: ", keys.rt)
+      setTimeout(function() {showNextPracticeTrial(level)}, iti)
+    }
   } else if (keys.key === 'ArrowLeft') {
 
   }
@@ -604,6 +628,7 @@ function getStarted() {
 
 
 function showNextTrial(level) {
+  isPractice = false
   if (level === 'level1') {
     trials = level1Trials
   } else if (level === 'level2') {
@@ -635,6 +660,64 @@ function showNextTrial(level) {
     showSummary()
     openNav()
     t = maxTrials+1
+    return false
+  }
+  var vid = document.createElement("video")
+  vid.src = path.join(mediaPath, trials[trialOrder[t]].stim1.trim() + '.mp4')
+  vid.autoplay = true
+  vid.controls = false
+  content.appendChild(vid)
+  vid.onended = function() {
+    clearScreen()
+    var vid2 = document.createElement("video")
+    vid2.src = path.join(mediaPath, trials[trialOrder[t]].stim2.trim() + '.mp4')
+    vid2.autoplay = true
+    vid2.controls = false
+    vid2.onended = function() {
+      clearScreen()
+      trialTimeoutID = setTimeout(function() {
+        showNextTrial(level)
+      }, trialTimeoutTime)
+    }
+    content.appendChild(vid2)
+  }
+  return getTime()
+}
+
+
+function showNextPracticeTrial(level) {
+  isPractice = true
+  if (level === 'level1') {
+    trials = level1Trials
+  } else if (level === 'level2') {
+    trials = level2Trials
+  } else if (level === 'level3') {
+    trials = level3Trials
+  } else if (level === 'level4') {
+    trials = level4Trials
+  } else if (level === 'level5') {
+    trials = level5Trials
+  } else if (level === 'level6') {
+    trials = level6Trials
+  } else if (level === 'level7') {
+    trials = level7Trials
+  } else if (level === 'level8') {
+    trials = level8Trials
+  } else if (level === 'level9') {
+    trials = level9Trials
+  } else if (level === 'level10') {
+    trials = level10Trials
+  }
+  clearTimeout(trialTimeoutID)
+  closeNav()
+  clearScreen()
+  t += 1
+  if (t > maxPracticeTrials-1) {
+    clearScreen()
+    isPractice = false
+    clearAllTimeouts()
+    resetTrialNumber()
+    getStarted()
     return false
   }
   var vid = document.createElement("video")
