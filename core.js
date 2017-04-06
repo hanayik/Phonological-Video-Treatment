@@ -251,6 +251,7 @@ function clearScreen() {
 // show text instructions on screen
 function showInstructions(txt) {
   trialOrder = shuffle(randomArray)
+  totalAccArray = []
   dir = path.join(savePath, 'PolarData', 'PhonTx', getSubjID(), getSessID())
   if (!fs.existsSync(dir)) {
       mkdirp.sync(dir)
@@ -472,6 +473,7 @@ function appendTrialDataToFile(fileToAppend, dataArray) {
 function updateKeys() {
   // gets called from: document.addEventListener('keydown', updateKeys);
   iti = 1500 // milliseconds
+  fbTime = 750
   keys.key = event.key
   keys.time = performance.now() // gives ms
   keys.rt = 0
@@ -486,10 +488,12 @@ function updateKeys() {
       console.log("accuracy: ", accuracy)
       keys.rt = getRT()
       console.log("RT: ", keys.rt)
+      showFeedback(accuracy)
+      setTimeout(clearScreen, fbTime)
       //['subj', 'session', 'assessment', 'stim1', 'stim2', 'correctResp', 'keyPressed', 'reactionTime', 'accuracy', os.EOL]
       //appendTrialDataToFile(wordsFilledFileToSave, [subjID, sessID, assessment, wordsFilledTrials[t].stim1.trim(), wordsFilledTrials[t].stim2.trim(), wordsFilledTrials[t].correctResp.trim(), keys.key, keys.rt, accuracy])
       //waitSecs(1.5)
-      setTimeout(function() {showNextTrial(level)}, iti)
+      setTimeout(function() {showNextTrial(level)}, iti + fbTime)
     } else if (isPractice) {
       clearScreen()
       accuracy = checkAccuracy()
@@ -499,13 +503,27 @@ function updateKeys() {
       console.log("accuracy: ", accuracy)
       keys.rt = getRT()
       console.log("RT: ", keys.rt)
-      setTimeout(function() {showNextPracticeTrial(level)}, iti)
+      showFeedback(accuracy)
+      setTimeout(clearScreen, fbTime)
+      setTimeout(function() {showNextPracticeTrial(level)}, iti + fbTime)
     }
   } else if (keys.key === 'ArrowLeft') {
 
   }
 }
 
+
+function showFeedback (trialAcc) {
+  if (trialAcc == true) {
+    fbImg = path.join(exp.mediapath, 'correct' + '.png')
+  } else if (trialAcc == false) {
+    fbImg = path.join(exp.mediapath, 'incorrect' + '.png')
+  }
+  var img = document.createElement("img")
+  img.src = fbImg
+  img.style.height = '40%'
+  content.appendChild(img)
+}
 
 function mean(arrayToAvg) {
   var sum = arrayToAvg.reduce((previous, current) => current += previous);
@@ -686,6 +704,7 @@ function showNextTrial(level) {
 
 
 function showNextPracticeTrial(level) {
+  console.log ('Doing practice trial')
   isPractice = true
   if (level === 'level1') {
     trials = level1Trials
@@ -734,7 +753,7 @@ function showNextPracticeTrial(level) {
     vid2.onended = function() {
       clearScreen()
       trialTimeoutID = setTimeout(function() {
-        showNextTrial(level)
+        showNextPracticeTrial(level)
       }, trialTimeoutTime)
     }
     content.appendChild(vid2)
