@@ -25,6 +25,7 @@ let mainWindow
 function createWindow () {
   // Create the browser window.
   mainWindow = new BrowserWindow({width: 800, height: 600, fullscreen: true})
+  //mainWindow.maximize()
 
   // and load the index.html of the app.
   mainWindow.loadURL(url.format({
@@ -149,6 +150,19 @@ autoUpdater.on('checking-for-update', function(){
 })
 autoUpdater.on('update-available', function(){
   console.log('update available, downloading now')
+  const availableNotification = notifier.notify('', {
+    message: "Update available. Downloading in the background now",
+    buttons: ['Ok'],
+    duration: 4000,
+    icon: path.join(__dirname, 'icon.png')
+  })
+  availableNotification.on('buttonClicked', (text) => {
+    console.log(text)
+    availableNotification.close()
+  })
+  availableNotification.on('clicked', () => {
+    availableNotification.close()
+  })
 })
 autoUpdater.on('update-not-available', function(){
   console.log('update not available')
