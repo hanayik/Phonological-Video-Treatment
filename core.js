@@ -40,7 +40,7 @@ var trials
 var maxTrials = 20
 var maxPracticeTrials = 2
 var fileToSave
-var fileHeader = ['subj', 'session', 'assessment', 'stim1', 'stim2', 'correctResp', 'keyPressed', 'reactionTime', 'accuracy', os.EOL]
+var fileHeader = ['subj', 'session', 'assessment', 'level', 'stim1', 'stim2', 'correctResp', 'keyPressed', 'reactionTime', 'accuracy', os.EOL]
 var level = ''
 var subjID
 var sessID
@@ -256,7 +256,7 @@ function showInstructions(txt) {
   if (!fs.existsSync(dir)) {
       mkdirp.sync(dir)
     }
-  fileToSave = path.join(dir,subjID+'_'+sessID+'_level_'+level+'_'+getDateStamp()+'.csv')
+  fileToSave = path.join(dir,subjID+'_'+sessID+'_PhonTx_level_'+level+'_'+getDateStamp()+'.csv')
   clearScreen()
   var textDiv = document.createElement("div")
   textDiv.style.textAlign = 'center'
@@ -460,7 +460,7 @@ function appendTrialDataToFile(fileToAppend, dataArray) {
   dataArray.push(os.EOL)
   dataString = csvsync.stringify(dataArray)
   if (!fs.existsSync(fileToAppend)) {
-    fs.appendFileSync(fileToAppend, wordsFilledHeader)
+    fs.appendFileSync(fileToAppend, fileHeader)
     fs.appendFileSync(fileToAppend, dataArray)
   } else {
     fs.appendFileSync(fileToAppend, dataArray)
@@ -490,8 +490,8 @@ function updateKeys() {
       console.log("RT: ", keys.rt)
       showFeedback(accuracy)
       setTimeout(clearScreen, fbTime)
-      //['subj', 'session', 'assessment', 'stim1', 'stim2', 'correctResp', 'keyPressed', 'reactionTime', 'accuracy', os.EOL]
-      //appendTrialDataToFile(wordsFilledFileToSave, [subjID, sessID, assessment, wordsFilledTrials[t].stim1.trim(), wordsFilledTrials[t].stim2.trim(), wordsFilledTrials[t].correctResp.trim(), keys.key, keys.rt, accuracy])
+      //['subj', 'session', 'assessment', 'level', 'stim1', 'stim2', 'correctResp', 'keyPressed', 'reactionTime', 'accuracy', os.EOL]
+      appendTrialDataToFile(fileToSave, [subjID, sessID, 'PhonTx', level, trials[trialOrder[t]].stim1.trim(), trials[trialOrder[t]].stim2.trim(), trials[trialOrder[t]].correctResp.trim(), keys.key, keys.rt, accuracy])
       //waitSecs(1.5)
       setTimeout(function() {showNextTrial(level)}, iti + fbTime)
     } else if (isPractice) {
@@ -691,6 +691,9 @@ function showNextTrial(level) {
     vid2.src = path.join(mediaPath, trials[trialOrder[t]].stim2.trim() + '.mp4')
     vid2.autoplay = true
     vid2.controls = false
+    vid2.onplay = function() {
+    stimOnset = getTime()
+    }
     vid2.onended = function() {
       clearScreen()
       trialTimeoutID = setTimeout(function() {
