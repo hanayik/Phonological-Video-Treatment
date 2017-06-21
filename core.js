@@ -252,11 +252,11 @@ function clearScreen() {
 function showInstructions(txt) {
   trialOrder = shuffle(randomArray)
   totalAccArray = []
-  dir = path.join(savePath, 'PolarData', 'PhonTx', getSubjID(), getSessID())
+  dir = path.join(savePath, 'PolarData', 'Phon', getSubjID(), getSessID())
   if (!fs.existsSync(dir)) {
       mkdirp.sync(dir)
     }
-  fileToSave = path.join(dir,subjID+'_'+sessID+'_PhonTx_level_'+level+'_'+getDateStamp()+'.csv')
+  fileToSave = path.join(dir,subjID+'_'+sessID+'_Phon_level_'+level+'_'+getDateStamp()+'.csv')
   clearScreen()
   var textDiv = document.createElement("div")
   textDiv.style.textAlign = 'center'
