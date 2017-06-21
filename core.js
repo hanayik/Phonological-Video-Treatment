@@ -521,7 +521,7 @@ function showFeedback (trialAcc) {
   }
   var img = document.createElement("img")
   img.src = fbImg
-  img.style.height = '40%'
+  img.style.height = '10%'
   content.appendChild(img)
 }
 
