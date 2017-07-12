@@ -104,6 +104,11 @@ if (process.platform === 'darwin') {
         role: 'about'
       },
       {
+        label: 'Check for update',
+        type: 'normal',
+        click() {checkForUpdateFromRender()}
+      },
+      {
         type: 'separator'
       },
       {
