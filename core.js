@@ -98,6 +98,16 @@ function checkForUpdateFromRender() {
   //alert('checked for update')
 }
 
+ipcRenderer.on('showSpinner', function () {
+  //<div class="loader">Loading...</div>
+  spinnerDiv = document.createElement('div')
+  spinnerDiv.className = 'loader'
+  spinnerDiv.style.zIndex = "1000";
+  content.appendChild(spinnerDiv)
+  console.log("added spinner!")
+
+})
+
 function getSubjID() {
   var subjID = document.getElementById("subjID").value
   if (subjID === '') {
