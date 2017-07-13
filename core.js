@@ -89,6 +89,7 @@ var trialOrder = []
 var userDataPath = path.join(app.getPath('userData'),'Data')
 makeSureUserDataFolderIsThere()
 var savePath
+var summaryIsOnScreen = false
 isPractice = false
 
 
@@ -214,8 +215,34 @@ function chooseFile() {
 }
 
 
-function analyzeSelectedFile(filePath) {
+function analyzeSelectedFile(theChosenOne) {
+  filePath = theChosenOne[0]
   console.log("file chosen: ", filePath)
+  data = readCSV(filePath)
+  len = data.length
+  console.log('analyzing...')
+  accSum = 0
+  for (i = 0; i < len; i++) {
+    if (Number(data[i]['accuracy']) === 1) {
+      // if sounds were the same and accuracy was 1
+      accSum += 1 // increase by 1
+    }
+  }
+  clearScreen()
+  var textDiv = document.createElement("div")
+  textDiv.style.textAlign = 'center'
+  if (20 !== len) {
+    var warn_p = document.createElement("p")
+    var warn_txt = document.createTextNode("Warning! The number of trials in the data file does not match the total number of trials for this test")
+    warn_p.appendChild(warn_txt)
+    textDiv.appendChild(warn_p)
+  }
+  accMsg = 'Accuracy: ' + accSum/len
+  var acc_p = document.createElement("p")
+  var acc_txtNode = document.createTextNode(accMsg)
+  acc_p.appendChild(acc_txtNode)
+  textDiv.appendChild(acc_p)
+  content.appendChild(textDiv)
 }
 
 
@@ -478,6 +505,9 @@ function appendTrialDataToFile(fileToAppend, dataArray) {
 
 // update keys object when a keydown event is detected
 function updateKeys() {
+  if (summaryIsOnScreen) {
+    return
+  }
   // gets called from: document.addEventListener('keydown', updateKeys);
   iti = 1500 // milliseconds
   fbTime = 750
@@ -613,6 +643,7 @@ function resetVars() {
 }
 
 function getStarted() {
+  summaryIsOnScreen = false
   resetVars()
   subjID = document.getElementById("subjID").value
   sessID = document.getElementById("sessID").value
@@ -773,6 +804,7 @@ function showNextPracticeTrial(level) {
 
 
 function showSummary() {
+  summaryIsOnScreen = true
   accMin = 0.6
   if (totalAcc < accCutOff && totalAcc >= accMin) {
     accMsg = 'Accuracy: ' + totalAcc + '. Recommendation: Repeat current level (' + level + ')'
