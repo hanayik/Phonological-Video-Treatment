@@ -109,7 +109,7 @@ ipcRenderer.on('showSpinner', function () {
 })
 
 function getSubjID() {
-  var subjID = document.getElementById("subjID").value
+  var subjID = document.getElementById("subjID").value.trim()
   if (subjID === '') {
     subjID = '0'
   }
@@ -117,7 +117,7 @@ function getSubjID() {
 }
 
 function getSessID() {
-  var sessID = document.getElementById("sessID").value
+  var sessID = document.getElementById("sessID").value.trim()
   if (sessID === '') {
     sessID = '0'
   }
@@ -655,9 +655,9 @@ function resetVars() {
 function getStarted() {
   summaryIsOnScreen = false
   resetVars()
-  subjID = document.getElementById("subjID").value
-  sessID = document.getElementById("sessID").value
-  level = document.getElementById("levelID").value
+  subjID = document.getElementById("subjID").value.trim()
+  sessID = document.getElementById("sessID").value.trim()
+  level = document.getElementById("levelID").value.trim()
   console.log("level chosen: ", level)
   if (subjID === '' || sessID === '' || level === '') {
     console.log ('subject, session, or level is blank')
