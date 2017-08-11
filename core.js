@@ -293,7 +293,7 @@ function clearScreen() {
 function showInstructions(txt) {
   trialOrder = shuffle(randomArray)
   totalAccArray = []
-  dir = path.join(savePath, 'PolarData', 'Phon', getSubjID(), getSessID())
+  dir = path.join(savePath, 'Phon', getSubjID(), getSessID())
   if (!fs.existsSync(dir)) {
       mkdirp.sync(dir)
     }
