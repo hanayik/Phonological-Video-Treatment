@@ -91,6 +91,7 @@ makeSureUserDataFolderIsThere()
 var savePath
 var summaryIsOnScreen = false
 isPractice = false
+var firstVideoNotFinished = true
 
 
 function checkForUpdateFromRender() {
@@ -518,6 +519,9 @@ function updateKeys() {
   if (summaryIsOnScreen) {
     return
   }
+  if (firstVideoNotFinished) {
+    return
+  }
   // gets called from: document.addEventListener('keydown', updateKeys);
   iti = 1500 // milliseconds
   fbTime = 750
@@ -695,6 +699,7 @@ function getStarted() {
 
 function showNextTrial(level) {
   isPractice = false
+  firstVideoNotFinished = true
   if (level === 'level1') {
     trials = level1Trials
   } else if (level === 'level2') {
@@ -735,6 +740,7 @@ function showNextTrial(level) {
   content.appendChild(vid)
   vid.onended = function() {
     clearScreen()
+    firstVideoNotFinished = false
     var vid2 = document.createElement("video")
     vid2.src = path.join(mediaPath, trials[trialOrder[t]].stim2.trim() + '.mp4')
     vid2.autoplay = true
@@ -757,6 +763,7 @@ function showNextTrial(level) {
 function showNextPracticeTrial(level) {
   console.log ('Doing practice trial')
   isPractice = true
+  firstVideoNotFinished = true
   if (level === 'level1') {
     trials = level1Trials
   } else if (level === 'level2') {
@@ -797,6 +804,7 @@ function showNextPracticeTrial(level) {
   content.appendChild(vid)
   vid.onended = function() {
     clearScreen()
+    firstVideoNotFinished = false
     var vid2 = document.createElement("video")
     vid2.src = path.join(mediaPath, trials[trialOrder[t]].stim2.trim() + '.mp4')
     vid2.autoplay = true
