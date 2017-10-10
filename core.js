@@ -49,6 +49,7 @@ var stimOnset
 var accuracy
 var totalAccArray = []
 var rt
+var nextTrialTimeoutID
 //var trialNum = document.getElementById("trialNumID")
 //var trialNumber = 1
 var t = -1
@@ -531,6 +532,8 @@ function updateKeys() {
   console.log("key: " + keys.key)
   if (keys.key === '1' || keys.key === '2') {
     if (!isPractice) {
+      clearTimeout(nextTrialTimeoutID)
+      clearTimeout(trialTimeoutID)
       clearScreen()
       accuracy = checkAccuracy()
       totalAccArray.push(accuracy)
@@ -546,6 +549,8 @@ function updateKeys() {
       //waitSecs(1.5)
       setTimeout(function() {showNextTrial(level)}, iti + fbTime)
     } else if (isPractice) {
+      clearTimeout(nextTrialTimeoutID)
+      clearTimeout(trialTimeoutID)
       clearScreen()
       accuracy = checkAccuracy()
       //totalAccArray.push(accuracy)
@@ -762,7 +767,8 @@ function showNextTrial(level) {
         setTimeout(clearScreen, fbTime)
         //['subj', 'session', 'assessment', 'level', 'stim1', 'stim2', 'correctResp', 'keyPressed', 'reactionTime', 'accuracy', os.EOL]
         appendTrialDataToFile(fileToSave, [subjID, sessID, 'PhonTx', level, trials[trialOrder[t]].stim1.trim(), trials[trialOrder[t]].stim2.trim(), trials[trialOrder[t]].correctResp.trim(), keys.key, keys.rt, accuracy])
-        setTimeout(function() {showNextTrial(level)}, iti + fbTime)
+        nextTrialTimeoutID = setTimeout(function() {showNextTrial(level)}, iti + fbTime)
+
       }, trialTimeoutTime)
     }
     content.appendChild(vid2)
