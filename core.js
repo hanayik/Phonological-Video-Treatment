@@ -92,6 +92,8 @@ var savePath
 var summaryIsOnScreen = false
 isPractice = false
 var firstVideoNotFinished = true
+var iti = 1500 // milliseconds
+var fbTime = 750
 
 
 function checkForUpdateFromRender() {
@@ -523,8 +525,6 @@ function updateKeys() {
     return
   }
   // gets called from: document.addEventListener('keydown', updateKeys);
-  iti = 1500 // milliseconds
-  fbTime = 750
   keys.key = event.key
   keys.time = performance.now() // gives ms
   keys.rt = 0
@@ -548,9 +548,8 @@ function updateKeys() {
     } else if (isPractice) {
       clearScreen()
       accuracy = checkAccuracy()
-      totalAccArray.push(accuracy)
-      totalAcc = mean(totalAccArray)
-      console.log('total acc: ', totalAcc)
+      //totalAccArray.push(accuracy)
+      //totalAcc = mean(totalAccArray)
       console.log("accuracy: ", accuracy)
       keys.rt = getRT()
       console.log("RT: ", keys.rt)
@@ -751,7 +750,18 @@ function showNextTrial(level) {
     vid2.onended = function() {
       clearScreen()
       trialTimeoutID = setTimeout(function() {
-        showNextTrial(level)
+        keys.rt = 0
+        keys.key = ''
+        accuracy = checkAccuracy()
+        totalAccArray.push(accuracy)
+        totalAcc = mean(totalAccArray)
+        console.log('total acc: ', totalAcc)
+        console.log("accuracy: ", accuracy)
+        showFeedback(accuracy)
+        setTimeout(clearScreen, fbTime)
+        //['subj', 'session', 'assessment', 'level', 'stim1', 'stim2', 'correctResp', 'keyPressed', 'reactionTime', 'accuracy', os.EOL]
+        appendTrialDataToFile(fileToSave, [subjID, sessID, 'PhonTx', level, trials[trialOrder[t]].stim1.trim(), trials[trialOrder[t]].stim2.trim(), trials[trialOrder[t]].correctResp.trim(), keys.key, keys.rt, accuracy])
+        setTimeout(function() {showNextTrial(level)}, iti + fbTime)
       }, trialTimeoutTime)
     }
     content.appendChild(vid2)
@@ -812,7 +822,14 @@ function showNextPracticeTrial(level) {
     vid2.onended = function() {
       clearScreen()
       trialTimeoutID = setTimeout(function() {
-        showNextPracticeTrial(level)
+        clearScreen()
+        keys.rt = 0
+        keys.key = ''
+        accuracy = checkAccuracy()
+        console.log("accuracy: ", accuracy)
+        showFeedback(accuracy)
+        setTimeout(clearScreen, fbTime)
+        setTimeout(function() {showNextPracticeTrial(level)}, iti + fbTime)
       }, trialTimeoutTime)
     }
     content.appendChild(vid2)
