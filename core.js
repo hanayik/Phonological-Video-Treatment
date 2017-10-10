@@ -557,6 +557,7 @@ function updateKeys() {
       setTimeout(clearScreen, fbTime)
       setTimeout(function() {showNextPracticeTrial(level)}, iti + fbTime)
     }
+    firstVideoNotFinished = true
   } else if (keys.key === 'ArrowLeft') {
 
   }
