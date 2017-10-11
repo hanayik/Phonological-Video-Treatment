@@ -768,7 +768,7 @@ function showNextTrial(level) {
         //['subj', 'session', 'assessment', 'level', 'stim1', 'stim2', 'correctResp', 'keyPressed', 'reactionTime', 'accuracy', os.EOL]
         appendTrialDataToFile(fileToSave, [subjID, sessID, 'PhonTx', level, trials[trialOrder[t]].stim1.trim(), trials[trialOrder[t]].stim2.trim(), trials[trialOrder[t]].correctResp.trim(), keys.key, keys.rt, accuracy])
         nextTrialTimeoutID = setTimeout(function() {showNextTrial(level)}, iti + fbTime)
-
+        firstVideoNotFinished = true
       }, trialTimeoutTime)
     }
     content.appendChild(vid2)
@@ -837,6 +837,7 @@ function showNextPracticeTrial(level) {
         showFeedback(accuracy)
         setTimeout(clearScreen, fbTime)
         setTimeout(function() {showNextPracticeTrial(level)}, iti + fbTime)
+        firstVideoNotFinished = true
       }, trialTimeoutTime)
     }
     content.appendChild(vid2)
